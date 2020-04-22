@@ -51,6 +51,7 @@ pub fn bpf_map_update_elem<'a, 'b, T, U>(
 ///
 /// See the [kernel documentation](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/uapi/linux/bpf.h#n1626)
 /// for more details.
+#[inline]
 pub fn bpf_redirect_map<'a, 'b, U>(
     map: &'a BpfMapDef<u32, U>,
     key: &'b u32,

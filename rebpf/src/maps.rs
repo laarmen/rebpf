@@ -12,6 +12,7 @@ use crate::{
 /// device, a CPU, or a socket.
 pub trait Redirect {
     fn redirect_or(&self, target: u32, default_action: XdpAction) -> XdpAction;
+    #[inline]
     fn redirect(&self, target: u32) -> XdpAction {
         self.redirect_or(target, XdpAction::ABORTED)
     }
@@ -64,6 +65,7 @@ impl CpuMap {
 }
 
 impl Redirect for CpuMap {
+    #[inline]
     fn redirect_or(&self, target: u32, default_action: XdpAction) -> XdpAction {
         bpf_redirect_map(&self.0, &target, default_action)
     }
@@ -100,6 +102,7 @@ impl XskMap {
 }
 
 impl Redirect for XskMap {
+    #[inline]
     fn redirect_or(&self, target: u32, default_action: XdpAction) -> XdpAction {
         bpf_redirect_map(&self.0, &target, default_action)
     }
@@ -137,6 +140,7 @@ impl DevMap {
 }
 
 impl Redirect for DevMap {
+    #[inline]
     fn redirect_or(&self, target: u32, default_action: XdpAction) -> XdpAction {
         bpf_redirect_map(&self.0, &target, default_action)
     }
