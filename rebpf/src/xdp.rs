@@ -32,7 +32,23 @@ pub enum XdpAction {
 #[repr(transparent)]
 pub struct XdpMetadata(libbpf::xdp_md);
 
-pub fn bpf_set_link_xdp_fd(interface: &Interface, bpf_fd: Option<&BpfProgFd>, xdp_flags: &[XdpFlags]) -> Result<(), Error> {
+impl XdpMetadata {
+    #[inline]
+    pub fn data(&self) -> &[u8] {
+        unsafe {
+            core::slice::from_raw_parts(
+                core::mem::transmute(self.0.data as usize),
+                (self.0.data_end - self.0.data) as usize,
+            )
+        }
+    }
+}
+
+pub fn bpf_set_link_xdp_fd(
+    interface: &Interface,
+    bpf_fd: Option<&BpfProgFd>,
+    xdp_flags: &[XdpFlags],
+) -> Result<(), Error> {
     let xdp_flags = xdp_flags.iter().fold(0, |res, f| {
         return res | unsafe { *((f as *const XdpFlags) as *const u32) };
     });
