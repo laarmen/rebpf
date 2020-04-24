@@ -329,6 +329,24 @@ pub fn bpf_map_lookup_elem<T, U>(map_fd: &BpfMapFd<T, U>, key: &T, value: &mut U
     Some(())
 }
 
+/// Thin wrapper around libbpf's bpf_map_update_elem function.
+pub fn bpf_map_update_elem<T, U>(
+    map_fd: &BpfMapFd<T, U>,
+    key: &T,
+    value: &U,
+    flags: BpfUpdateElemFlags,
+) -> Result<(), Error> {
+    let key = to_const_c_void(key);
+    let value = to_const_c_void(value);
+    match unsafe { libbpf::bpf_map_update_elem(map_fd.fd(), key, value, flags.bits() as u64) } {
+        0 => Ok(()),
+        err => Err(Error::Libbpf(
+            "Map update error".to_owned(),
+            error::LibbpfError::LibbpfSys(err),
+        )),
+    }
+}
+
 #[allow(non_snake_case)]
 pub fn bpf_object__find_program_by_title(
     bpf_object: &BpfObject,
